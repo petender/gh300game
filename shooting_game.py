@@ -1,6 +1,7 @@
 import pygame
 import random
 import time
+import sys
 
 # Initialize Pygame
 pygame.init()
@@ -50,7 +51,7 @@ def get_player_name():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                return None
+                sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN and name:
                     input_active = False
@@ -182,8 +183,7 @@ def play_game(player_name):
 def main():
     """Main function to run the game."""
     player_name = get_player_name()
-    if player_name:
-        play_game(player_name)
+    play_game(player_name)
 
 
 if __name__ == "__main__":
