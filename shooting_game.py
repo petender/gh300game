@@ -86,13 +86,15 @@ def play_game(player_name):
     """Main game logic."""
     clock = pygame.time.Clock()
     running = True
-    game_state = "ready"  # ready, target_shown, result
+    game_state = "ready"  # ready, waiting, target_shown, result
     
     target_x = 0
     target_y = 0
     target_start_time = 0
     reaction_time = 0
     player_won = False
+    wait_until = 0
+    wait_duration = 0
     
     while running:
         screen.fill(WHITE)
@@ -126,14 +128,27 @@ def play_game(player_name):
             
             pygame.display.flip()
             
-            # Wait a random time before showing target
-            pygame.time.wait(random.randint(1000, 3000))
+            # Set up non-blocking wait
+            wait_duration = random.randint(1000, 3000)
+            wait_until = pygame.time.get_ticks() + wait_duration
+            game_state = "waiting"
+        
+        elif game_state == "waiting":
+            # Continue showing ready screen while waiting
+            draw_shooter()
+            instruction = font_small.render(f"Welcome {player_name}! Get ready...", True, BLACK)
+            screen.blit(instruction, (SCREEN_WIDTH // 2 - instruction.get_width() // 2, 100))
             
-            # Generate random target position
-            target_x = random.randint(100, SCREEN_WIDTH - 100)
-            target_y = random.randint(100, SCREEN_HEIGHT - 150)
-            target_start_time = time.time()
-            game_state = "target_shown"
+            wait_text = font_small.render("Press SPACE when target appears!", True, BLACK)
+            screen.blit(wait_text, (SCREEN_WIDTH // 2 - wait_text.get_width() // 2, 150))
+            
+            # Check if wait time is over
+            if pygame.time.get_ticks() >= wait_until:
+                # Generate random target position
+                target_x = random.randint(100, SCREEN_WIDTH - 100)
+                target_y = random.randint(100, SCREEN_HEIGHT - 150)
+                target_start_time = time.time()
+                game_state = "target_shown"
         
         elif game_state == "target_shown":
             draw_shooter()
